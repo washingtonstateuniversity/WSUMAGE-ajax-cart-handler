@@ -1,5 +1,5 @@
 <?php
-class Wsu_CartAjax_Block_Ajax extends Mage_Core_Block_Template {
+class Wsu_CartAjax_Block_CartAjax extends Mage_Core_Block_Template {
 	public function _prepareLayout() {
 		return parent::_prepareLayout();
     }
