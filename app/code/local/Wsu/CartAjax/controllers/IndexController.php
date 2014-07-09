@@ -4,8 +4,15 @@ class Wsu_CartAjax_IndexController extends Mage_Checkout_CartController {
 	public function addAction() {
 		$cart   = $this->_getCart();
 		$params = $this->getRequest()->getParams();
-		if($params['isAjax'] == 1){
+		if($params['cartAjaxUsed'] == 1){
 			$response = array();
+			
+			$response['params_used'] = $params;
+			
+			$this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
+			exit();
+			
+			
 			try {
 				if (isset($params['qty'])) {
 					$filter = new Zend_Filter_LocalizedToNormalized(
