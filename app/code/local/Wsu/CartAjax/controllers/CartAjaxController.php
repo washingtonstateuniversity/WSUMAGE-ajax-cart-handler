@@ -1,58 +1,94 @@
 <?php
 require_once 'Mage/Checkout/controllers/CartController.php';
-class Wsu_CartAjax_IndexController extends Mage_Checkout_CartController {
+class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 	public function addAction() {
-		$cart   = $this->_getCart();
-		$params = $this->getRequest()->getParams();
-		if($params['isAjax'] == 1){
+
+		$params = $this->getRequest()->getParams();		
+		if($params['cartAjaxUsed'] == 1){
 			$response = array();
 			try {
-				if (isset($params['qty'])) {
-					$filter = new Zend_Filter_LocalizedToNormalized(
-					array('locale' => Mage::app()->getLocale()->getLocaleCode())
+				$cart   = $this->_getCart();
+					
+				/** @var \Mage_Catalog_Model_Product $product_model */
+				$product_model = Mage::getModel('catalog/product');
+				
+				/** @var \Mage_Checkout_Model_Cart $cart */
+				$cart = Mage::getSingleton('checkout/cart');
+				$cart->init();
+				//$cart->truncate();
+
+				//$response['params_to_use'] = $params;
+				$testProducts = array(892,893);
+	
+				foreach($testProducts as $product_id){
+
+					$product = $product_model->load($product_id);
+					$params = array(
+						'product' => $product_id,
+						'qty' => 1,
+						/*'options' => array(
+							34 => "value",
+							35 => "other value",
+							53 => "some other value"
+						)*/
 					);
-					$params['qty'] = $filter->filter($params['qty']);
+					
+					$params['super_attribute'] = array("foo" =>"bar");
+					
+					if (isset($params['qty'])) {
+						$filter = new Zend_Filter_LocalizedToNormalized(
+						array('locale' => Mage::app()->getLocale()->getLocaleCode())
+						);
+						$params['qty'] = $filter->filter($params['qty']);
+					}
+	
+					//$product = $this->_initProduct();
+					//$related = $this->getRequest()->getParam('related_product');
+					
+					$cart->addProduct($product_id, $params);
+					if (!empty($related)) {
+						//$cart->addProductsByIds(explode(',', $related));
+					}
+	
+					/**
+					 * @todo remove wishlist observer processAddToCart
+					 
+					Mage::dispatchEvent('checkout_cart_add_product_complete',
+						array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
+					);*/
 				}
-
-				$product = $this->_initProduct();
-				$related = $this->getRequest()->getParam('related_product');
-
-				/**
-				 * Check product availability
-				 */
-				if (!$product) {
-					$response['status'] = 'ERROR';
-					$response['message'] = $this->__('Unable to find Product ID');
-				}
-
-				$cart->addProduct($product, $params);
-				if (!empty($related)) {
-					$cart->addProductsByIds(explode(',', $related));
-				}
-
 				$cart->save();
-
 				$this->_getSession()->setCartWasUpdated(true);
+			
+				/*ob_start();
+				$quote = Mage::getSingleton('checkout/session')->getQuote();
+				$cartItems = $quote->getAllVisibleItems();
+				var_dump($cartItems);
+				$a=ob_get_contents();
+				ob_end_clean();
+	
+				$response['var_dump']=$a;
+	
+				$this->getResponse()->setBody($a);
+				return;*/
+			
+			
+			
 
-				/**
-				 * @todo remove wishlist observer processAddToCart
-				 */
-				Mage::dispatchEvent('checkout_cart_add_product_complete',
-					array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
-				);
 
 				if (!$cart->getQuote()->getHasError()){
 					$message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->htmlEscape($product->getName()));
 					$response['status'] = 'SUCCESS';
 					$response['message'] = $message;
 					//New Code Here
-					$this->loadLayout();
+					/*$this->loadLayout();
 					$toplink = $this->getLayout()->getBlock('top.links')->toHtml();
 					$sidebar_block = $this->getLayout()->getBlock('cart_sidebar');
 					Mage::register('referrer_url', $this->_getRefererUrl());
 					$sidebar = $sidebar_block->toHtml();
 					$response['toplink'] = $toplink;
-					$response['sidebar'] = $sidebar;
+					$response['sidebar'] = $sidebar;*/
+					$response['checkout'] = $checkout_link = Mage::helper('checkout/url')->getCheckoutUrl();
 				}
 			} catch (Mage_Core_Exception $e) {
 				$msg = "";
@@ -72,6 +108,8 @@ class Wsu_CartAjax_IndexController extends Mage_Checkout_CartController {
 				$response['message'] = $this->__('Cannot add the item to shopping cart.');
 				Mage::logException($e);
 			}
+			//var_dump($response);
+			//return;
 			$this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
 			return;
 		}else{
