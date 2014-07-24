@@ -23,7 +23,7 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 				foreach($products as $p_id){
 
 					$product = $product_model->load($p_id);
-					$params = array(
+					$product_params = array(
 						'product' => $p_id,
 						'qty' => $params['product'][$p_id]['qty'],
 						/*'options' => array(
@@ -33,19 +33,19 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 						)*/
 					);
 					
-					$params['super_attribute'] = array("foo" =>"bar");
+					$product_params['super_attribute'] = array("foo" =>"bar");
 					
-					if (isset($params['product'][$p_id]['qty'])) {
+					if (isset($product_params['qty'])) {
 						$filter = new Zend_Filter_LocalizedToNormalized(
 							array('locale' => Mage::app()->getLocale()->getLocaleCode())
 						);
-						$params['product'][$p_id]['qty'] = $filter->filter($params['product'][$p_id]['qty']);
+						$product_params['qty'] = $filter->filter($product_params['qty']);
 					}
 	
 					//$product = $this->_initProduct();
 					//$related = $this->getRequest()->getParam('related_product');
 					
-					$cart->addProduct($product_id, $params);
+					$cart->addProduct($product_id, $product_params);
 					if (!empty($related)) {
 						//$cart->addProductsByIds(explode(',', $related));
 					}
