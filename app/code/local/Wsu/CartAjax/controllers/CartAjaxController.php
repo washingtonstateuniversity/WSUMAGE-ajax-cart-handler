@@ -23,6 +23,7 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 				foreach($products as $p_id){
 
 					$product = $product_model->load($p_id);
+					
 					$product_params = array(
 						'product' => $p_id,
 						'qty' => $params['product'][$p_id]['qty'],
@@ -32,6 +33,40 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 							53 => "some other value"
 						)*/
 					);
+					
+					if ($product->getTypeId() != 'configurable') {
+						foreach($params['product'][$p_id]['options'] as $named=>$obj){
+							if(!is_array($obj)){
+								$options = 	array( 'type' => 'radio', 'is_require'	=> 1, 'price' => 0, 'price_type' => 'fixed' );
+	 
+								$values = array(
+									array(
+										'title'		=> $named,
+										'price'		=> 0,
+										'price_type'	=> 'fixed',
+									)
+								);
+	 
+								try {
+									$option = Mage::helper('wsu_cartajax')->setCustomOption($p_id, $named, $options, $values);
+								} catch (Exception $e) {
+									echo $e->getMessage();
+								}
+								$product_params['options'][$option->getId()] = $deliveryDate;
+							}
+						}
+					}		
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+
 					
 					$product_params['super_attribute'] = array("foo" =>"bar");
 					
@@ -116,6 +151,54 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 			return parent::addAction();
 		}
 	}
+	
+	
+
+
+	function saveProductOption($product) {
+	
+		$store = Mage::app()->getStore()->getId();
+		$opt = Mage::getModel('catalog/product_option');
+		$opt->setProduct($product);
+		$option = array(
+			'is_delete' => 0,
+			'is_require' => false,
+			'previous_group' => 'text',
+			'title' => 'Delivery Date',
+			'type' => 'field',
+			'price_type' => 'fixed',
+			'price' => '0.0000'
+		);
+		$opt->addOption($option);
+		$opt->saveOptions();
+		Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
+		$product->setHasOptions(1);
+		$product->save();
+	
+		$options = $product->getOptions();
+		if ($options) {
+			foreach ($options as $option) {
+				if ($option->getTitle() == 'Delivery Date') {
+					$optionID = $option->getOptionId();
+				}
+			}
+		}
+		Mage::app()->setCurrentStore(Mage::getModel('core/store')->load($store));
+		return $optionID;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public function optionsAction(){
 		$productId = $this->getRequest()->getParam('product_id');
 		// Prepare helper and params
