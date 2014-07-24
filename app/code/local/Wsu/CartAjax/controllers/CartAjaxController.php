@@ -45,7 +45,7 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 					//$product = $this->_initProduct();
 					//$related = $this->getRequest()->getParam('related_product');
 					
-					$cart->addProduct($product_id, $product_params);
+					$cart->addProduct($p_id, $product_params);
 					if (!empty($related)) {
 						//$cart->addProductsByIds(explode(',', $related));
 					}
