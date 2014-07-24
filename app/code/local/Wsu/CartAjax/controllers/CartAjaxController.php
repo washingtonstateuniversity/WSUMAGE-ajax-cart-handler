@@ -17,15 +17,15 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 				$cart->init();
 				//$cart->truncate();
 
-				//$response['params_to_use'] = $params;
-				$testProducts = array(892,893);
+				$response['params_to_use'] = $params;
+				$products = $params['products'];
 	
-				foreach($testProducts as $product_id){
+				foreach($products as $p_id){
 
-					$product = $product_model->load($product_id);
+					$product = $product_model->load($p_id);
 					$params = array(
-						'product' => $product_id,
-						'qty' => 1,
+						'product' => $p_id,
+						'qty' => $params['product'][$p_id]['qty'],
 						/*'options' => array(
 							34 => "value",
 							35 => "other value",
@@ -35,11 +35,11 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 					
 					$params['super_attribute'] = array("foo" =>"bar");
 					
-					if (isset($params['qty'])) {
+					if (isset($params['product'][$p_id]['qty'])) {
 						$filter = new Zend_Filter_LocalizedToNormalized(
-						array('locale' => Mage::app()->getLocale()->getLocaleCode())
+							array('locale' => Mage::app()->getLocale()->getLocaleCode())
 						);
-						$params['qty'] = $filter->filter($params['qty']);
+						$params['product'][$p_id]['qty'] = $filter->filter($params['product'][$p_id]['qty']);
 					}
 	
 					//$product = $this->_initProduct();
