@@ -3,9 +3,11 @@ require_once 'Mage/Checkout/controllers/CartController.php';
 class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 	public function addAction() {
 
-		$params = $this->getRequest()->getParams();		
+		$params = $this->getRequest()->getParams();
+		
 		if($params['cartAjaxUsed'] == 1){
 			$response = array();
+			$response['params_to_use'] = $params;
 			try {
 				$cart   = $this->_getCart();
 					
@@ -17,7 +19,7 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 				$cart->init();
 				//$cart->truncate();
 
-				$response['params_to_use'] = $params;
+				
 				$products = $params['products'];
 	
 				foreach($products as $p_id){
@@ -35,18 +37,17 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 					);
 					
 					if ($product->getTypeId() != 'configurable') {
-						foreach($params['product'][$p_id]['options'] as $named=>$obj){
-							if(!is_array($obj)){
-								$options = 	array( 'type' => 'text', 'is_require'	=> 0, 'price' => 0, 'price_type' => 'fixed' );
+						foreach($params['product'][$p_id]['options'] as $named=>$value){
+							if($named!=="{%d%}" && !is_array($value)){
+								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
 								$values = array(
-									array(
-										'title'		=> $obj,
+										'title'		=> $named,
 										'price'		=> 0,
+										//'sku'       => $named." ",
 										'price_type'	=> 'fixed',
-									)
-								);
+									);
 								$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
-								$product_params['options'][$option->getId()] = $obj;
+								$product_params['options'][$option->getId()] = $value;
 								/*try {} catch (Exception $e) {
 									echo $e->getMessage();
 								}*/
