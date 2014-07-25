@@ -47,12 +47,12 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 									)
 								);
 	 
-								try {
-									$option = Mage::helper('wsu_cartajax')->setCustomOption($p_id, $named, $options, $values);
+								
+									$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
 									$product_params['options'][$option->getId()] = $obj;
-								} catch (Exception $e) {
+								/*try {} catch (Exception $e) {
 									echo $e->getMessage();
-								}
+								}*/
 								
 							}
 						}
