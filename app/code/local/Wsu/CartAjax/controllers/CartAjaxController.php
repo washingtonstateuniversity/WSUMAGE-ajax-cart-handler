@@ -38,14 +38,15 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 					
 					if ($product->getTypeId() != 'configurable') {
 						foreach($params['product'][$p_id]['options'] as $named=>$value){
-							if($named!=="{%d%}" && !is_array($value)){
+							if($named!=="{%d%}" && $named!=="guest" && !is_array($value)){
 								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
 								$values = false;
-								$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
-								$product_params['options'][$option->getId()] = $value;
-								/*try {} catch (Exception $e) {
+								try {
+									$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
+									$product_params['options'][$option->getId()] = $value;
+								} catch (Exception $e) {
 									echo $e->getMessage();
-								}*/
+								}/**/
 							}
 						}
 					}		
