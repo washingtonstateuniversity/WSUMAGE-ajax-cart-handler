@@ -1,10 +1,10 @@
 <?php
-class Wsu_CartAjax_Block_CartAjax extends Mage_Core_Block_Template {
+class Wsu_Cartajax_Block_Cartajax extends Mage_Core_Block_Template {
 	public function _prepareLayout() {
 		return parent::_prepareLayout();
     }
     
-     public function getCartAjax() { 
+     public function getCartajax() { 
         if (!$this->hasData('cartajax')) {
             $this->setData('cartajax', Mage::registry('cartajax'));
         }

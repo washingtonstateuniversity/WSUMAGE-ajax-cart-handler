@@ -1,16 +1,16 @@
 <?xml version="1.0"?>
 <config>
     <modules>
-        <Wsu_CartAjax>
+        <Wsu_Cartajax>
             <version>0.1.0</version>
-        </Wsu_CartAjax>
+        </Wsu_Cartajax>
     </modules>
     <frontend>
         <routers>
             <cartajax>
                 <use>standard</use>
                 <args>
-                    <module>Wsu_CartAjax</module>
+                    <module>Wsu_Cartajax</module>
                     <frontName>cartajax</frontName>
                 </args>
             </cartajax>
@@ -26,11 +26,11 @@
     <global>
         <models>
             <cartajax>
-                <class>Wsu_CartAjax_Model</class>
+                <class>Wsu_Cartajax_Model</class>
                 <resourceModel>cartajax_mysql4</resourceModel>
             </cartajax>
             <cartajax_mysql4>
-                <class>Wsu_CartAjax_Model_Mysql4</class>
+                <class>Wsu_Cartajax_Model_Mysql4</class>
                 <entities>
                     <cartajax>
                         <table>cartajax</table>
@@ -41,7 +41,7 @@
         <resources>
             <cartajax_setup>
                 <setup>
-                    <module>Wsu_CartAjax</module>
+                    <module>Wsu_Cartajax</module>
                 </setup>
                 <connection>
                     <use>core_setup</use>
@@ -61,16 +61,16 @@
         <blocks>
         	<checkout>
         		<rewrite>
-        			<cart_sidebar>Wsu_CartAjax_Block_Cart_Sidebar</cart_sidebar>
+        			<cart_sidebar>Wsu_Cartajax_Block_Cart_Sidebar</cart_sidebar>
         		</rewrite>
         	</checkout>
             <cartajax>
-                <class>Wsu_CartAjax_Block</class>
+                <class>Wsu_Cartajax_Block</class>
             </cartajax>
         </blocks>
         <helpers>
             <cartajax>
-                <class>Wsu_CartAjax_Helper</class>
+                <class>Wsu_Cartajax_Helper</class>
             </cartajax>
         </helpers>
     </global>

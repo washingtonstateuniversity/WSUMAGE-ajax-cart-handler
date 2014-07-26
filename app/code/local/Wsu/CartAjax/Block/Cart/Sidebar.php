@@ -1,5 +1,5 @@
 <?php
-class Wsu_CartAjax_Block_Cart_Sidebar extends Mage_Checkout_Block_Cart_Sidebar{
+class Wsu_Cartajax_Block_Cart_Sidebar extends Mage_Checkout_Block_Cart_Sidebar{
 	public function getItemRenderer($type) {
 		if (!isset($this->_itemRenders[$type])) {
 			$type = 'default';
