@@ -3,9 +3,11 @@ require_once 'Mage/Checkout/controllers/CartController.php';
 class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 	public function addAction() {
 
-		$params = $this->getRequest()->getParams();		
+		$params = $this->getRequest()->getParams();
+		
 		if($params['cartAjaxUsed'] == 1){
 			$response = array();
+			$response['params_to_use'] = $params;
 			try {
 				$cart   = $this->_getCart();
 					
@@ -17,15 +19,16 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 				$cart->init();
 				//$cart->truncate();
 
-				//$response['params_to_use'] = $params;
-				$testProducts = array(892,893);
+				
+				$products = $params['products'];
 	
-				foreach($testProducts as $product_id){
+				foreach($products as $p_id){
 
-					$product = $product_model->load($product_id);
-					$params = array(
-						'product' => $product_id,
-						'qty' => 1,
+					$product = $product_model->load($p_id);
+					
+					$product_params = array(
+						'product' => $p_id,
+						'qty' => $params['product'][$p_id]['qty'],
 						/*'options' => array(
 							34 => "value",
 							35 => "other value",
@@ -33,19 +36,45 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 						)*/
 					);
 					
-					$params['super_attribute'] = array("foo" =>"bar");
+					if ($product->getTypeId() != 'configurable') {
+						foreach($params['product'][$p_id]['options'] as $named=>$value){
+							if($named!=="{%d%}" && $named!=="guest" && !is_array($value)){
+								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
+								$values = false;
+								try {
+									$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
+									$product_params['options'][$option->getId()] = $value;
+								} catch (Exception $e) {
+									echo $e->getMessage();
+								}/**/
+							}
+						}
+					}		
 					
-					if (isset($params['qty'])) {
+					
+					
+					
+					
+					
+					
+					
+					
+					
+
+					
+					$product_params['super_attribute'] = array("foo" =>"bar");
+					
+					if (isset($product_params['qty'])) {
 						$filter = new Zend_Filter_LocalizedToNormalized(
-						array('locale' => Mage::app()->getLocale()->getLocaleCode())
+							array('locale' => Mage::app()->getLocale()->getLocaleCode())
 						);
-						$params['qty'] = $filter->filter($params['qty']);
+						$product_params['qty'] = $filter->filter($product_params['qty']);
 					}
 	
 					//$product = $this->_initProduct();
 					//$related = $this->getRequest()->getParam('related_product');
 					
-					$cart->addProduct($product_id, $params);
+					$cart->addProduct($p_id, $product_params);
 					if (!empty($related)) {
 						//$cart->addProductsByIds(explode(',', $related));
 					}
@@ -116,6 +145,54 @@ class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
 			return parent::addAction();
 		}
 	}
+	
+	
+
+
+	function saveProductOption($product) {
+	
+		$store = Mage::app()->getStore()->getId();
+		$opt = Mage::getModel('catalog/product_option');
+		$opt->setProduct($product);
+		$option = array(
+			'is_delete' => 0,
+			'is_require' => false,
+			'previous_group' => 'text',
+			'title' => 'Delivery Date',
+			'type' => 'field',
+			'price_type' => 'fixed',
+			'price' => '0.0000'
+		);
+		$opt->addOption($option);
+		$opt->saveOptions();
+		Mage::app()->setCurrentStore(Mage::getModel('core/store')->load(Mage_Core_Model_App::ADMIN_STORE_ID));
+		$product->setHasOptions(1);
+		$product->save();
+	
+		$options = $product->getOptions();
+		if ($options) {
+			foreach ($options as $option) {
+				if ($option->getTitle() == 'Delivery Date') {
+					$optionID = $option->getOptionId();
+				}
+			}
+		}
+		Mage::app()->setCurrentStore(Mage::getModel('core/store')->load($store));
+		return $optionID;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public function optionsAction(){
 		$productId = $this->getRequest()->getParam('product_id');
 		// Prepare helper and params
