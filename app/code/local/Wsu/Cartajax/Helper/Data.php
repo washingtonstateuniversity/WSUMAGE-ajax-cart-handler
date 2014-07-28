@@ -1,5 +1,5 @@
 <?php
-class Wsu_CartAjax_Helper_Data extends Mage_Core_Helper_Abstract {
+class Wsu_Cartajax_Helper_Data extends Mage_Core_Helper_Abstract {
 	
 	public function productHasCustomOption($productId, $title) {
 		Mage::app()->getStore()->setId(Mage_Core_Model_App::ADMIN_STORE_ID);

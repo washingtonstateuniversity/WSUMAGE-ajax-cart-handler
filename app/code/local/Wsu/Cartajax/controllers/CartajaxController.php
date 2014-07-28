@@ -1,6 +1,6 @@
 <?php
 require_once 'Mage/Checkout/controllers/CartController.php';
-class Wsu_CartAjax_CartAjaxController extends Mage_Checkout_CartController {
+class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 	public function addAction() {
 
 		$params = $this->getRequest()->getParams();

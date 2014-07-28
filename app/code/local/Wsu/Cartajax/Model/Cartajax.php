@@ -1,5 +1,5 @@
 <?php
-class Wsu_CartAjax_Model_Ajax extends Mage_Core_Model_Abstract {
+class Wsu_Cartajax_Model_Ajax extends Mage_Core_Model_Abstract {
     public function _construct() {
         parent::_construct();
         $this->_init('cartajax/cartajax');
