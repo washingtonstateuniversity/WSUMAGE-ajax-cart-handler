@@ -38,34 +38,35 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					);
 					
 					if ($product->getTypeId() != 'configurable') {
+						// add to the additional options array
+						$additionalOptions = array();
+						if ($additionalOption = $product->getCustomOption('additional_options')){
+							$additionalOptions = (array) unserialize($additionalOption->getValue());
+						}
 						foreach($params['product'][$p_id]['options'] as $named=>$value){
 							if($named!=="{%d%}" && !is_array($value)){
-
-							// add to the additional options array
-							$additionalOptions = array();
-							if ($additionalOption = $product->getCustomOption('additional_options')){
-								$additionalOptions = (array) unserialize($additionalOption->getValue());
-							}
-							foreach ($value as $key => $subvalue){
-								if($key!=="{%d%}" && !is_array($subvalue)){
 									$additionalOptions[] = array(
-										'label' => $key,
-										'value' => $subvalue,
+										'label' => $named,
+										'value' => $value,
 									);
-								}else{
-									foreach ($subvalue as $subkey => $_subvalue){
-										if($subkey!=="{%d%}" && !is_array($_subvalue)){
-											$additionalOptions[] = array(
-												'label' => $key."_".$subkey,
-												'value' => $_subvalue,
-											);
-										}
-									}	
-								}
-							}
-				
-								
-								
+							}else{
+								foreach ($value as $key => $subvalue){
+									if($key!=="{%d%}" && !is_array($subvalue)){
+										$additionalOptions[] = array(
+											'label' => $key,
+											'value' => $subvalue,
+										);
+									}else{
+										foreach ($subvalue as $subkey => $_subvalue){
+											if($subkey!=="{%d%}" && !is_array($_subvalue)){
+												$additionalOptions[] = array(
+													'label' => $key."_".$subkey,
+													'value' => $_subvalue,
+												);
+											}
+										}	
+									}
+								}								
 								/*
 								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
 								$values = false;
