@@ -55,7 +55,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 									foreach ($subvalue as $subkey => $_subvalue){
 										if($subkey!=="{%d%}" && !is_array($_subvalue)){
 											$additionalOptions[] = array(
-												'label' => $subkey,
+												'label' => $key."_".$subkey,
 												'value' => $_subvalue,
 											);
 										}
