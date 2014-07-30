@@ -36,6 +36,28 @@ class Wsu_Cartajax_Model_Observer{
 			$orderItem->setProductOptions($options);
 		}
 	}
-
+	public function checkoutCartProductAddAfter(Varien_Event_Observer $observer) {
+		$action = Mage::app()->getFrontController()->getAction();
+		if ($action->getFullActionName() == 'sales_order_reorder') {
+			$item = $observer->getQuoteItem();
+			$buyInfo = $item->getBuyRequest();
+			if ($options = $buyInfo->getExtraOptions()) {
+				$additionalOptions = array();
+				if ($additionalOption = $item->getOptionByCode('additional_options')) {
+					$additionalOptions = (array) unserialize($additionalOption->getValue());
+				}
+				foreach ($options as $key => $value) {
+					$additionalOptions[] = array(
+						'label' => $key,
+						'value' => $value,
+					);
+				}
+				$item->addOption(array(
+					'code' => 'additional_options',
+					'value' => serialize($additionalOptions)
+				));
+			}
+		}
+	}
 
 }
