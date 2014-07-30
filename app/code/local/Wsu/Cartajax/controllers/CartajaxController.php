@@ -29,6 +29,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					$product_params = array(
 						'product' => $p_id,
 						'qty' => $params['product'][$p_id]['qty'],
+						'options'=>array()
 						/*'options' => array(
 							34 => "value",
 							35 => "other value",
@@ -82,7 +83,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					
 					
 					// add the additional options array with the option code additional_options
-					$product_params['additional_options']=serialize($additionalOptions);
+					$product_params['options']['additional_options']=serialize($additionalOptions);
 					
 					
 					
@@ -162,7 +163,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 				$response['message'] = $msg;
 			} catch (Exception $e) {
 				$response['status'] = 'ERROR';
-				$response['message'] = $this->__('Cannot add the item to shopping cart.');
+				$response['message'] = $this->__('Cannot add the item to shopping cart. err:').$e;
 				Mage::logException($e);
 			}
 			//var_dump($response);
