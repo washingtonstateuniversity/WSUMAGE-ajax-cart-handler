@@ -73,5 +73,17 @@
                 <class>Wsu_Cartajax_Helper</class>
             </cartajax>
         </helpers>
+		<catalog_product_load_after>
+			<observers>
+				<extra_options>
+					<type>model</type>
+					<class>extra_options/observer</class>
+					<method>catalogProductLoadAfter</method>
+				</extra_options>
+			</observers>
+		</catalog_product_load_after>
+		
+		
+		
     </global>
 </config>
