@@ -38,7 +38,34 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					
 					if ($product->getTypeId() != 'configurable') {
 						foreach($params['product'][$p_id]['options'] as $named=>$value){
-							if($named!=="{%d%}" && $named!=="guest" && !is_array($value)){
+							if($named!=="{%d%}" && !is_array($value)){
+
+							// add to the additional options array
+							$additionalOptions = array();
+							if ($additionalOption = $product->getCustomOption('additional_options')){
+								$additionalOptions = (array) unserialize($additionalOption->getValue());
+							}
+							foreach ($value as $key => $subvalue){
+								if($key!=="{%d%}" && !is_array($subvalue)){
+									$additionalOptions[] = array(
+										'label' => $key,
+										'value' => $subvalue,
+									);
+								}else{
+									foreach ($subvalue as $subkey => $_subvalue){
+										if($subkey!=="{%d%}" && !is_array($_subvalue)){
+											$additionalOptions[] = array(
+												'label' => $subkey,
+												'value' => $_subvalue,
+											);
+										}
+									}	
+								}
+							}
+				
+								
+								
+								/*
 								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
 								$values = false;
 								try {
@@ -46,7 +73,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 									$product_params['options'][$option->getId()] = $value;
 								} catch (Exception $e) {
 									echo $e->getMessage();
-								}/**/
+								}*/
 							}
 						}
 					}		
@@ -54,7 +81,8 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					
 					
 					
-					
+					// add the additional options array with the option code additional_options
+					$product_params['additional_options']=serialize($additionalOptions);
 					
 					
 					
