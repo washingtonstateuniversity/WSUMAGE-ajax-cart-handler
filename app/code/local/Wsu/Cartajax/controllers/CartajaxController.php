@@ -4,6 +4,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 	public function addAction() {
 
 		$params = $this->getRequest()->getParams();
+		$used=array();
 		
 		if($params['cartAjaxUsed'] == 1){
 			$response = array();
@@ -29,6 +30,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					$product_params = array(
 						'product' => $p_id,
 						'qty' => $params['product'][$p_id]['qty'],
+						'options'=>array()
 						/*'options' => array(
 							34 => "value",
 							35 => "other value",
@@ -37,16 +39,46 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					);
 					
 					if ($product->getTypeId() != 'configurable') {
-						foreach($params['product'][$p_id]['options'] as $named=>$value){
-							if($named!=="{%d%}" && $named!=="guest" && !is_array($value)){
-								$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
-								$values = false;
-								try {
-									$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
-									$product_params['options'][$option->getId()] = $value;
-								} catch (Exception $e) {
-									echo $e->getMessage();
-								}/**/
+						// add to the additional options array
+						$additionalOptions = array();
+						if ($additionalOption = $product->getCustomOption('additional_options')){
+							$additionalOptions = (array) unserialize($additionalOption->getValue());
+						}
+						if(isset($params['product'][$p_id]['options'])){
+							foreach($params['product'][$p_id]['options'] as $named=>$value){
+								if($named!=="{%d%}" && !is_array($value)){
+										$additionalOptions[] = array(
+											'label' => $named,
+											'value' => $value,
+										);
+								}else{
+									foreach ($value as $key => $subvalue){
+										if($key!=="{%d%}" && !is_array($subvalue)){
+											$additionalOptions[] = array(
+												'label' => $named."_".$key,
+												'value' => $subvalue,
+											);
+										}else{
+											foreach ($subvalue as $subkey => $_subvalue){
+												if($subkey!=="{%d%}" && !is_array($_subvalue)){
+													$additionalOptions[] = array(
+														'label' => $named."_".$key."_".$subkey,
+														'value' => $_subvalue,
+													);
+												}
+											}	
+										}
+									}								
+									/*
+									$options = 	array( 'type' => 'field', 'price' => 0, 'price_type' => 'fixed' );
+									$values = false;
+									try {
+										$option = Mage::helper('cartajax')->setCustomOption($p_id, $named, $options, $values);
+										$product_params['options'][$option->getId()] = $value;
+									} catch (Exception $e) {
+										echo $e->getMessage();
+									}*/
+								}
 							}
 						}
 					}		
@@ -54,7 +86,8 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 					
 					
 					
-					
+					// add the additional options array with the option code additional_options
+					$product_params['options']['additional_options']=serialize($additionalOptions);
 					
 					
 					
@@ -73,7 +106,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 	
 					//$product = $this->_initProduct();
 					//$related = $this->getRequest()->getParam('related_product');
-					
+					$used[]=$product_params;
 					$cart->addProduct($p_id, $product_params);
 					if (!empty($related)) {
 						//$cart->addProductsByIds(explode(',', $related));
@@ -103,10 +136,10 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 			
 			
 			
-
+				$response['used'] = $used;
 
 				if (!$cart->getQuote()->getHasError()){
-					$message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->htmlEscape($product->getName()));
+					$message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->htmlEscape($product->getName())) . ' :: ' . serialize($additionalOptions);
 					$response['status'] = 'SUCCESS';
 					$response['message'] = $message;
 					//New Code Here
@@ -134,7 +167,7 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 				$response['message'] = $msg;
 			} catch (Exception $e) {
 				$response['status'] = 'ERROR';
-				$response['message'] = $this->__('Cannot add the item to shopping cart.');
+				$response['message'] = $this->__('Cannot add the item to shopping cart. err:').$e;
 				Mage::logException($e);
 			}
 			//var_dump($response);

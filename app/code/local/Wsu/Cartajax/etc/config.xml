@@ -73,5 +73,34 @@
                 <class>Wsu_Cartajax_Helper</class>
             </cartajax>
         </helpers>
+		<catalog_product_load_after>
+			<observers>
+				<extra_options>
+					<type>model</type>
+					<class>cartajax/observer</class>
+					<method>catalogProductLoadAfter</method>
+				</extra_options>
+			</observers>
+		</catalog_product_load_after>
+		<sales_convert_quote_item_to_order_item>
+			<observers>
+				<extra_options>
+					<type>model</type>
+					<class>cartajax/observer</class>
+					<method>salesConvertQuoteItemToOrderItem</method>
+				</extra_options>
+			</observers>
+		</sales_convert_quote_item_to_order_item>
+		<checkout_cart_product_add_after>
+			<observers>
+				<extra_options>
+					<type>singleton</type>
+					<class>cartajax/observer</class>
+					<method>checkoutCartProductAddAfter</method>
+				</extra_options>
+			</observers>
+		</checkout_cart_product_add_after>
+		
+		
     </global>
 </config>
