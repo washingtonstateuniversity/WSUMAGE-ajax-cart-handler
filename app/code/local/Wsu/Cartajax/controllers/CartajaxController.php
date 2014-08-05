@@ -47,10 +47,14 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 						if(isset($params['product'][$p_id]['options'])){
 							foreach($params['product'][$p_id]['options'] as $named=>$value){
 								if($named!=="{%d%}" && !is_array($value)){
+									if(is_int($named)){
+										$product_params['options'][$named]=$value;
+									}else{
 										$additionalOptions[] = array(
 											'label' => $named,
 											'value' => $value,
 										);
+									}
 								}else{
 									foreach ($value as $key => $subvalue){
 										if($key!=="{%d%}" && !is_array($subvalue)){
