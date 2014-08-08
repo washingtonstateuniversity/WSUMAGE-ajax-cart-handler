@@ -73,6 +73,22 @@
                 <class>Wsu_Cartajax_Helper</class>
             </cartajax>
         </helpers>
+		<events>
+		
+            <sales_quote_collect_totals_after>
+                <observers>
+                    <set_custom_discount_suagrcode>
+                        <type>singleton</type>
+                        <class>Wsu_Cartajax_Model_Observer</class>
+                        <method>setDiscount</method>
+                    </set_custom_discount_suagrcode>
+                </observers>
+            </sales_quote_collect_totals_after>   
+		
+		</events>
+		
+		
+		
 		<catalog_product_load_after>
 			<observers>
 				<extra_options>

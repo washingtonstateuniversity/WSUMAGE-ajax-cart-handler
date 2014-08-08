@@ -10,6 +10,13 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 			$response = array();
 			$response['params_to_use'] = $params;
 			try {
+				if(!isset($params['products']) || empty($params['products'])){
+					$response['status'] = 'ERROR';
+					$response['message'] = $this->__("There seems to me nothing selected to add to the cart");
+					$this->getResponse()->setBody(Mage::helper('core')->jsonEncode($response));
+					return;
+				}
+				
 				$cart   = $this->_getCart();
 					
 				/** @var \Mage_Catalog_Model_Product $product_model */
@@ -86,20 +93,10 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 							}
 						}
 					}		
-					
-					
-					
-					
+
 					// add the additional options array with the option code additional_options
 					$product_params['options']['additional_options']=serialize($additionalOptions);
-					
-					
-					
-					
-					
-
-					
-					$product_params['super_attribute'] = array("foo" =>"bar");
+					//$product_params['super_attribute'] = array("foo" =>"bar");
 					
 					if (isset($product_params['qty'])) {
 						$filter = new Zend_Filter_LocalizedToNormalized(
