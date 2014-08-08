@@ -74,7 +74,7 @@
             </cartajax>
         </helpers>
 		<events>
-		
+		<!--
             <sales_quote_collect_totals_after>
                 <observers>
                     <set_custom_discount_suagrcode>
@@ -84,7 +84,7 @@
                     </set_custom_discount_suagrcode>
                 </observers>
             </sales_quote_collect_totals_after>   
-		
+		-->
 		</events>
 		
 		
