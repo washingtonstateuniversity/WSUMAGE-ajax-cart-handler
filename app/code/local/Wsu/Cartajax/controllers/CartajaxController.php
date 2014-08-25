@@ -2,8 +2,8 @@
 require_once 'Mage/Checkout/controllers/CartController.php';
 class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 	public function addAction() {
-
-		$params = $this->getRequest()->getParams();
+		$request = Mage::app()->getRequest();
+		$params = $request->getParams();
 		$used=array();
 		
 		if($params['cartAjaxUsed'] == 1){
@@ -235,13 +235,15 @@ class Wsu_Cartajax_CartajaxController extends Mage_Checkout_CartController {
 		$params = new Varien_Object();
 		$params->setCategoryId(false);
 		$params->setSpecifyOptions(false);
-
+		
+		$request = Mage::app()->getRequest();
+		$store = $request->getParam('store');
 		// Render page
 		try {
 			$viewHelper->prepareAndRender($productId, $this, $params);
 		} catch (Exception $e) {
 			if ($e->getCode() == $viewHelper->ERR_NO_PRODUCT_LOADED) {
-				if (isset($_GET['store'])  && !$this->getResponse()->isRedirect()) {
+				if (isset($store)  && !$this->getResponse()->isRedirect()) {
 					$this->_redirect('');
 				} elseif (!$this->getResponse()->isRedirect()) {
 					$this->_forward('noRoute');
